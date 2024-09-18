@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:user
+    container_name: nginx
+    build:  ./nginx
+    ports:
+      -"443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
