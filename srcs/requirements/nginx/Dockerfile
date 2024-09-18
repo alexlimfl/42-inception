@@ -8,7 +8,7 @@ RUN		mkdir -p /etc/nginx/ssl && chmod 777 /etc/nginx/ssl
 RUN		openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt\
 		-keyout /etc/nginx/ssl/inception.key -subj "/"
 
-COPY	./nginx.conf /etc/nginx/nginx.conf
+COPY	conf/nginx.conf /etc/nginx/nginx.conf
 
 RUN		mkdir -p var/www/wordpress && chmod 777 var/www/wordpress
 

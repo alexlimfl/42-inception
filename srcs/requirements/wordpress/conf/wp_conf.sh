@@ -1,5 +1,8 @@
 #!/bin/bash
-#---------------------------------------------------wp installation---------------------------------------------------#
+
+
+#-- WordPress Installation ---------------------------------------------------
+
 # wp-cli installation
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 # wp-cli permission
@@ -14,7 +17,9 @@ chmod -R 755 /var/www/wordpress/
 # change owner of wordpress directory to www-data
 chown -R www-data:www-data /var/www/wordpress
 
-#---------------------------------------------------ping mariadb---------------------------------------------------#
+
+#-- Ping MariaDB -------------------------------------------------------------
+
 # check if mariadb container is up and running
 ping_mariadb_container() {
     nc -zv mariadb 3306 > /dev/null # ping the mariadb container
@@ -36,7 +41,9 @@ done
 if [ $(date +%s) -ge $end_time ]; then # check if the current time is greater than or equal to the end time
     echo "[========MARIADB IS NOT RESPONDING========]"
 fi
-#---------------------------------------------------wp installation---------------------------------------------------##---------------------------------------------------wp installation---------------------------------------------------#
+
+
+#-- Download WordPress core files ---------------------------------------------------
 
 # download wordpress core files
 wp core download --allow-root
@@ -47,7 +54,8 @@ wp core install --url="$DOMAIN_NAME" --title="$WP_TITLE" --admin_user="$WP_ADMIN
 #create a new user with the given username, email, password and role
 wp user create "$WP_U_NAME" "$WP_U_EMAIL" --user_pass="$WP_U_PASS" --role="$WP_U_ROLE" --allow-root
 
-#---------------------------------------------------php config---------------------------------------------------#
+
+#-- PHP Configuration ---------------------------------------------------
 
 # change listen port from unix socket to 9000
 sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
