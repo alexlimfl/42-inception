@@ -1,7 +1,10 @@
 FROM	debian:12
 
+# use default values or bypass configurations during the installation to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN		apt-get update && apt-get upgrade -y
-RUN		apt-get install -y nginx openssl
+RUN		apt-get install -y nginx openssl apt-utils
 RUN		mkdir -p /etc/nginx/ssl && chmod 777 /etc/nginx/ssl
 
 #	Generate ssl certificate.
