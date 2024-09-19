@@ -1,28 +1,24 @@
-# Description: Nginx Dockerfile
+# Use Debian 11 as the base image
+FROM debian:11
 
-# pull the base image
-FROM debian:bullseye
+# Update the package list and upgrade installed packages
+# Install necessary packages: nginx, openssl, gettext-base
+# Create the SSL directory and set permissions
+# Set permissions for the web root directory
+# Change ownership of the web root directory to the www-data user
+RUN apt update -y && apt upgrade -y && \
+    apt install nginx openssl gettext-base -y && \
+    mkdir -p /etc/nginx/ssl/ && chmod 755 /etc/nginx/ssl && \
+    chmod 755 /var/www/html && \
+    chown -R www-data:www-data /var/www/html
 
-# update, upgrade and install required packages in one RUN command
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y nginx openssl apt-utils && \
-    rm -rf /var/lib/apt/lists/*
+# Copy the custom nginx configuration file to the container
+COPY ./conf/nginx.conf /
 
-# create the ssl directory and generate the ssl certificate
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout \
-    /etc/nginx/ssl/inception.key -subj "/C=MO/ST=KH/L=KH/O=42/OU=42/CN=domain_name.fr/UID=admin_name"
-
-# copy the nginx configuration file
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-
-# create the wordpress directory and set correct ownership
-RUN mkdir -p /var/www/wordpress && \
-    chown -R www-data:www-data /var/www/wordpress
-
-
-# expose port 443 for HTTPS
-EXPOSE 443
-
-# define the command to run when the container starts
-CMD ["nginx", "-g", "daemon off;"]
+# Define the command to run when the container starts
+# Generate a self-signed SSL certificate
+# Start nginx in the foreground
+CMD bash -c 'envsubst < /nginx.conf > /etc/nginx/conf.d/nginx.conf \ 
+    && openssl req -x509 -nodes -out \
+    "/etc/nginx/ssl/self.cert" -keyout "/etc/nginx/ssl/self.key" -subj "/"\
+    && nginx -g "daemon off;"'

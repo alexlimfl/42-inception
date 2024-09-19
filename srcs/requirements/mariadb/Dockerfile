@@ -1,18 +1,18 @@
-# Description: MariaDB Dockerfile
+# Use Debian 11 as the base image
+FROM debian:11
 
-# pull base image
-FROM debian:bullseye
+# Copy the database creation script to the container
+COPY ./conf/create_db.sh /
 
-# update, upgrade and install required packages in one RUN command
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y mariadb-server apt-utils && \
-    rm -rf /var/lib/apt/lists/*
+# Update package lists and upgrade installed packages
+# Install MariaDB server
+# Make the database creation script executable
+RUN apt update -y && apt upgrade -y && \
+    apt install mariadb-server -y && \
+    chmod +x /create_db.sh
 
-# copy configuration script from host to container
-COPY ./conf/mdb_conf.sh /mdb_conf.sh
+# Copy the MariaDB server configuration file to the container
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# set permissions to the file
-RUN chmod +x /mdb_conf.sh
-
-# define entrypoint command to run when the container starts
-ENTRYPOINT ["./mdb_conf.sh"]
+# Set the entrypoint to the database creation script
+ENTRYPOINT [ "bash", "create_db.sh" ]

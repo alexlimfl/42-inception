@@ -1,21 +1,29 @@
-# Description: WordPress Dockerfile
+# Use Debian 11 as the base image
+FROM debian:11
 
-# pull the base image
-FROM debian:bullseye
+# Set the working directory inside the container
+WORKDIR /var/www/html/
 
-# update, upgrade and install required packages in one RUN command
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y curl php php7.4-fpm php-mysql mariadb-client iputils-ping apt-utils && \
-    rm -rf /var/lib/apt/lists/*
+# Copy the auto configuration script to the container
+COPY conf/auto_conf.sh /home/
 
-# copy the wordpress configuration script to the container
-COPY /conf/wp_conf.sh /
+# Update package lists and upgrade installed packages
+# Install PHP, wget, PHP-FPM, and PHP-MySQL
+# Download WP-CLI
+# Make WP-CLI executable
+# Move WP-CLI to a directory in the PATH
+# Make the auto configuration script executable
+RUN apt update -y && apt upgrade -y && \
+    apt install -y php wget \
+    php-fpm \
+    php-mysql && \
+    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /bin/ && \
+    chmod +x /home/auto_conf.sh
 
-# change the permission of the script to make it executable
-RUN chmod +x /wp_conf.sh
+# Copy the PHP-FPM pool configuration file to the container
+COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-# expose port 9000 for php-fpm
-EXPOSE 9000
-
-# define the entrypoint command to run when the container starts
-ENTRYPOINT ["./wp_conf.sh"]
+# Set the command to run when the container starts
+CMD [ "bash", "/home/auto_conf.sh" ]

@@ -1,47 +1,40 @@
-WP_DATA = /home/folim/data/wordpress #define the path to the wordpress data
-DB_DATA = /home/folim/data/mariadb #define the path to the mariadb data
+# Create necessary directories and build and start all services
+all: 
+	mkdir -p /home/choyrc/data/mariadb
+	mkdir -p /home/choyrc/data/wordpress
+	docker-compose -f srcs/docker-compose.yml up -d --build
 
-all: up
-
-up: build
-	@mkdir -p $(WP_DATA)
-	@mkdir -p $(DB_DATA)
-	docker compose -f ./srcs/docker-compose.yml up -d
-
-down:
-	docker compose -f ./srcs/docker-compose.yml down
-
-stop:
-	docker compose -f ./srcs/docker-compose.yml stop
-
-start:
-	docker compose -f ./srcs/docker-compose.yml start
-
+# Build services without starting them
 build:
-	clear
-	docker compose -f ./srcs/docker-compose.yml build
+	docker-compose -f srcs/docker-compose.yml build
 
-ng:
-	@docker exec -it nginx zsh
+# Stop all running services
+stop:
+	docker-compose -f srcs/docker-compose.yml stop
 
-mdb:
-	@docker exec -it mariadb zsh
+# Show logs for all services
+logs:
+	docker-compose -f srcs/docker-compose.yml logs
 
-wp:
-	@docker exec -it wordpress zsh
-
+# Clean up stopped containers
 clean:
-	@docker stop $$(docker ps -qa) || true
-	@docker rm $$(docker ps -qa) || true
-	@docker rmi -f $$(docker images -qa) || true
-	@docker volume rm $$(docker volume ls -q) || true
-	@docker network rm $$(docker network ls -q) || true
-	@sudo rm -rf $(WP_DATA) || true
-	@sudo rm -rf $(DB_DATA) || true
+	docker stop $$(docker ps -aq) || true 2> /dev/null
+	docker rm -f $$(docker ps -aq) || true 2> /dev/null
 
-re: clean up
+# Fully clean up the environment, including volumes and images
+fclean: clean
+	sudo rm -rf /home/choyrc/data/wordpress
+	sudo rm -rf /home/choyrc/data/mariadb
+	docker rmi -f $$(docker images -aq) || true 2> /dev/null
+	docker volume rm $$(docker volume ls -q) || true 2> /dev/null
 
-prune: clean
-	@docker system prune -a --volumes -f
+# Bring up all services in attached mode
+up:
+	docker-compose -f srcs/docker-compose.yml up -d
 
-.PHONY: all up down stop start build ng mdb wp clean re prune
+# Bring down all services
+down:
+	docker-compose -f srcs/docker-compose.yml down
+
+# Rebuild and restart all services
+re: fclean all

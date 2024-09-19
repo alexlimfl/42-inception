@@ -1,65 +1,83 @@
+version: "3.8"
 
-# the services part
-services:
-#mariadb
-  mariadb:
-    image: mariadb:user
-    container_name: mariadb
-    build: ./requirements/mariadb
-    volumes:
-      - mariadb:/var/lib/mysql
-    env_file :
-      - .env
-    networks :
-      - inception
-    restart: always
-#nginx
-  nginx:
-    image: nginx:user
-    container_name: nginx
-    build: ./requirements/nginx
-    ports:
-      - "443:443"
-    depends_on:
-      - wordpress
-    volumes:
-      - wordpress:/var/www/wordpress
-    networks:
-      - inception
-    restart: always
-#wordpress
-  wordpress:
-    image: wordpress:user
-    container_name: wordpress
-    build: ./requirements/wordpress
-    depends_on:
-      - mariadb
-    volumes:
-      - wordpress:/var/www/wordpress
-    env_file :
-      - .env
-    networks:
-      - inception
-    restart: always
-
-# the volumes part
-volumes:
-  mariadb:
-    name: mariadb
-    driver: local
-    driver_opts:
-      device: /home/folim/data/mariadb
-      o : bind
-      type : none
-  wordpress:
-    name: wordpress
-    driver: local
-    driver_opts:
-      device: /home/folim/data/wordpress
-      o : bind
-      type : none
-
-# the networks part
 networks:
   inception:
     name: inception
+    driver: bridge # Use the bridge driver for networking
+
+volumes:
+  mariadb:
+    driver: local # Use the local driver for volumes
+    name: mariadb
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/choyrc/data/mariadb # Path to store MariaDB data
+  wordpress:
+    driver: local
+    name: wordpress
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/choyrc/data/wordpress # Path to store WordPress data
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx
+    build: requirements/nginx # Build the NGINX image from the specified directory
+    depends_on:
+      - wordpress # Ensure WordPress is started before NGINX
+    ports:
+      - "443:443" # Map port 443 on the host to port 443 on the container
+    volumes:
+      - wordpress:/var/www/html # Mount the WordPress volume
+    networks:
+      - inception
+    env_file:
+      - ./.env # Load environment variables from the .env file
+    restart: always # Restart the container automatically if it stops
+    init: true # Use an init system to handle process reaping
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress
+    build: requirements/wordpress # Build the WordPress image from the specified directory
+    depends_on:
+      - mariadb # Ensure MariaDB is started before WordPress
+    volumes:
+      - wordpress:/var/www/html # Mount the WordPress volume
+    networks:
+      - inception
+    env_file:
+      - ./.env # Load environment variables from the .env file
+    restart: always # Restart the container automatically if it stops
+    init: true # Use an init system to handle process reaping
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    build: requirements/mariadb # Build the MariaDB image from the specified directory
+    volumes:
+      - mariadb:/var/lib/mysql # Mount the MariaDB volume
+    networks:
+      - inception
+    env_file:
+      - ./.env # Load environment variables from the .env file
+    restart: always # Restart the container automatically if it stops
+    init: true # Use an init system to handle process reaping
+
+  redis:
+    container_name: redis
+    image: redis
+    build: requirements/bonus/redis/
+    ports:
+      - "6379:6379"
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    env_file:
+      - ./.env
+    restart: always
+    init: true

@@ -1,0 +1,13 @@
+[mysqld]
+user                    = mysql                     # Run MariaDB as the mysql user
+pid-file                = /run/mysqld/mysqld.pid    # Path to the PID file
+socket                  = /run/mysqld/mysqld.sock   # Path to the socket file
+port                    = 3306                      # Port for MariaDB
+basedir                 = /usr                      # Base directory for MariaDB
+datadir                 = /var/lib/mysql            # Directory for MariaDB data
+tmpdir                  = /tmp                      # Directory for temporary files
+lc-messages-dir         = /usr/share/mysql          # Directory for locale messages
+bind_address            = *                         # Bind to all available IP addresses
+expire_logs_days        = 10                        # Number of days to keep binary logs
+character-set-server    = utf8mb4                   # Default character set
+collation-server        = utf8mb4_general_ci        # Default collation
