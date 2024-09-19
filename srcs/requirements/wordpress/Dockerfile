@@ -1,12 +1,18 @@
-FROM debian:12
+# Description: Wordpress Dockerfile
 
-# use default values or bypass configurations during the installation to avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# pull the base image
+FROM debian:bullseye
 
+# update and upgrade the system
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y curl php php8.2-fpm php-mysql mariadb-client netcat-openbsd apt-utils sendmail net-tools
 
+# install the required packages
+RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client iputils-ping
+
+# copy the wordpress configuration script to the root directory in the container
 COPY /conf/wp_conf.sh /
+
+# change the permission of the script to make it executable
 RUN  chmod +x wp_conf.sh
 
 # define the entrypoint command to run when the container starts

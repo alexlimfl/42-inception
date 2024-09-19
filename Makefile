@@ -1,52 +1,36 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: folim <folim@student.42kl.edu.my>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/09/14 00:35:57 by folim             #+#    #+#              #
-#    Updated: 2024/09/14 00:36:09 by folim            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 WP_DATA = /home/folim/data/wordpress #define the path to the wordpress data
 DB_DATA = /home/folim/data/mariadb #define the path to the mariadb data
 
-# default target
 all: up
 
-# start the biulding process
-# create the wordpress and mariadb data directories.
-# start the containers in the background and leaves them running
 up: build
 	@mkdir -p $(WP_DATA)
 	@mkdir -p $(DB_DATA)
-	docker-compose -f ./srcs/docker-compose.yml up -d
+	docker compose -f ./srcs/docker-compose.yml up -d
 
-# build the containers
-build:
-	docker-compose -f ./srcs/docker-compose.yml build
-
-# start the containers
-start:
-	docker-compose -f ./srcs/docker-compose.yml start
-
-# stop and remove containers
 down:
-	docker-compose -f ./srcs/docker-compose.yml down
+	docker compose -f ./srcs/docker-compose.yml down
 
-# stop the containers
 stop:
-	docker-compose -f ./srcs/docker-compose.yml stop
+	docker compose -f ./srcs/docker-compose.yml stop
 
+start:
+	docker compose -f ./srcs/docker-compose.yml start
 
-# clean the containers
-# stop all running containers and remove them.
-# remove all images, volumes and networks.
-# remove the wordpress and mariadb data directories.
-# the (|| true) is used to ignore the error if there are no containers running to prevent the make command from stopping.
-fclean:
+build:
+	clear
+	docker compose -f ./srcs/docker-compose.yml build
+
+ng:
+	@docker exec -it nginx zsh
+
+mdb:
+	@docker exec -it mariadb zsh
+
+wp:
+	@docker exec -it wordpress zsh
+
+clean:
 	@docker stop $$(docker ps -qa) || true
 	@docker rm $$(docker ps -qa) || true
 	@docker rmi -f $$(docker images -qa) || true
@@ -55,5 +39,9 @@ fclean:
 	@sudo rm -rf $(WP_DATA) || true
 	@sudo rm -rf $(DB_DATA) || true
 
-# clean and start the containers
-re: fclean up
+re: clean up
+
+prune: clean
+	@docker system prune -a --volumes -f
+
+.PHONY: all up down stop start build ng mdb wp clean re prune

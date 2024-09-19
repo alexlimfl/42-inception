@@ -1,8 +1,5 @@
 #!/bin/bash
-
-
-#-- WordPress Installation ---------------------------------------------------
-
+#---------------------------------------------------wp installation---------------------------------------------------#
 # wp-cli installation
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 # wp-cli permission
@@ -16,13 +13,10 @@ cd /var/www/wordpress
 chmod -R 755 /var/www/wordpress/
 # change owner of wordpress directory to www-data
 chown -R www-data:www-data /var/www/wordpress
-
-
-#-- Ping MariaDB -------------------------------------------------------------
-
+#---------------------------------------------------ping mariadb---------------------------------------------------#
 # check if mariadb container is up and running
 ping_mariadb_container() {
-    nc -zv mariadb 3306 > /dev/null # ping the mariadb container
+    ping -c 1 mariadb > /dev/null # ping the mariadb container
     return $? # return the exit status of the ping command
 }
 start_time=$(date +%s) # get the current time in seconds
@@ -41,9 +35,7 @@ done
 if [ $(date +%s) -ge $end_time ]; then # check if the current time is greater than or equal to the end time
     echo "[========MARIADB IS NOT RESPONDING========]"
 fi
-
-
-#-- Download WordPress core files ---------------------------------------------------
+#---------------------------------------------------wp installation---------------------------------------------------##---------------------------------------------------wp installation---------------------------------------------------#
 
 # download wordpress core files
 wp core download --allow-root
@@ -54,12 +46,11 @@ wp core install --url="$DOMAIN_NAME" --title="$WP_TITLE" --admin_user="$WP_ADMIN
 #create a new user with the given username, email, password and role
 wp user create "$WP_U_NAME" "$WP_U_EMAIL" --user_pass="$WP_U_PASS" --role="$WP_U_ROLE" --allow-root
 
-
-#-- PHP Configuration ---------------------------------------------------
+#---------------------------------------------------php config---------------------------------------------------#
 
 # change listen port from unix socket to 9000
-sed -i 's@^listen = /run/php/php8.2-fpm.sock@listen = 0.0.0.0:9000@' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i '36 s@/run/php/php7.4-fpm.sock@9000@' /etc/php/7.4/fpm/pool.d/www.conf
 # create a directory for php-fpm
 mkdir -p /run/php
 # start php-fpm service in the foreground to keep the container running
-/usr/sbin/php-fpm8.2 -F
+/usr/sbin/php-fpm7.4 -F
