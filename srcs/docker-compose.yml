@@ -12,14 +12,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/choyrc/data/mariadb # Path to store MariaDB data
+      device: /home/folim/data/mariadb # Path to store MariaDB data
   wordpress:
     driver: local
     name: wordpress
     driver_opts:
       type: none
       o: bind
-      device: /home/choyrc/data/wordpress # Path to store WordPress data
+      device: /home/folim/data/wordpress # Path to store WordPress data
 
 services:
   nginx:

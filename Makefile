@@ -1,7 +1,7 @@
 # Create necessary directories and build and start all services
 all: 
-	mkdir -p /home/choyrc/data/mariadb
-	mkdir -p /home/choyrc/data/wordpress
+	mkdir -p /home/folim/data/mariadb
+	mkdir -p /home/folim/data/wordpress
 	docker-compose -f srcs/docker-compose.yml up -d --build
 
 # Build services without starting them
@@ -23,8 +23,8 @@ clean:
 
 # Fully clean up the environment, including volumes and images
 fclean: clean
-	sudo rm -rf /home/choyrc/data/wordpress
-	sudo rm -rf /home/choyrc/data/mariadb
+	sudo rm -rf /home/folim/data/wordpress
+	sudo rm -rf /home/folim/data/mariadb
 	docker rmi -f $$(docker images -aq) || true 2> /dev/null
 	docker volume rm $$(docker volume ls -q) || true 2> /dev/null
 
