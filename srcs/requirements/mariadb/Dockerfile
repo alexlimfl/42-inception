@@ -3,13 +3,12 @@
 # pull base image
 FROM debian:bullseye
 
-# update and upgrade the system
-RUN apt-get update && apt-get upgrade -y
+# update, upgrade and install required packages in one RUN command
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y mariadb-server apt-utils && \
+    rm -rf /var/lib/apt/lists/*
 
-# # install the required packages
-RUN apt-get install -y mariadb-server
-
-# copy file from host to container
+# copy configuration script from host to container
 COPY ./conf/mdb_conf.sh /mdb_conf.sh
 
 # set permissions to the file
