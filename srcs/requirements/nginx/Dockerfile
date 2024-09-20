@@ -5,13 +5,14 @@ FROM debian:bullseye
 
 # update, upgrade and install required packages in one RUN command
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y nginx openssl apt-utils && \
+    apt-get install -y nginx openssl iputils-ping apt-utils gettext-base && \
     rm -rf /var/lib/apt/lists/*
 
 # create the ssl directory and generate the ssl certificate
 RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -out "${SSL_CERT}" -keyout \
-    "${SSL_CERT_KEY}" -subj "/C=MY/ST=Selangor/L=PetalingJaya/O=42/OU=42/CN=${DOMAIN_NAME}/UID=${WP_ADMIN_N}"
+    openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt \
+     -keyout /etc/nginx/ssl/inception.key -subj \
+    "/C=MY/ST=Selangor/L=PetalingJaya/O=42/OU=42/CN=${DOMAIN_NAME}/UID=${WP_ADMIN_N}"
 
 # copy the nginx configuration file
 COPY conf/nginx.conf /etc/nginx/nginx.conf

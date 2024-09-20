@@ -5,7 +5,7 @@ FROM debian:bullseye
 
 # update, upgrade and install required packages in one RUN command
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y curl php php7.4-fpm php-mysql mariadb-client iputils-ping apt-utils && \
+    apt-get install -y curl php php7.4-fpm php-mysql mariadb-client sendmail iputils-ping apt-utils && \
     rm -rf /var/lib/apt/lists/*
 
 # copy the wordpress configuration script to the container

@@ -33,14 +33,14 @@ build:
 	clear
 	docker compose -f ./srcs/docker-compose.yml build
 
-ng:
-	@docker exec -it nginx zsh
+ngx:
+	@docker exec -it nginx bash
 
 mdb:
-	@docker exec -it mariadb zsh
+	@docker exec -it mariadb bash
 
 wp:
-	@docker exec -it wordpress zsh
+	@docker exec -it wordpress bash
 
 clean:
 	@docker stop $$(docker ps -qa) || true
