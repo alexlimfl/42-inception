@@ -1,5 +1,17 @@
-WP_DATA = /home/folim/data/wordpress #define the path to the wordpress data
-DB_DATA = /home/folim/data/mariadb #define the path to the mariadb data
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: folim <folim@student.42kl.edu.my>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/09/20 16:34:28 by folim             #+#    #+#              #
+#    Updated: 2024/09/20 16:34:30 by folim            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+WP_DATA = /home/folim/data/wordpress
+DB_DATA = /home/folim/data/mariadb
 
 all: up
 

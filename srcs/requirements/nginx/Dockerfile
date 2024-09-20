@@ -10,8 +10,8 @@ RUN apt-get update && apt-get upgrade -y && \
 
 # create the ssl directory and generate the ssl certificate
 RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout \
-    /etc/nginx/ssl/inception.key -subj "/C=MO/ST=KH/L=KH/O=42/OU=42/CN=domain_name.fr/UID=admin_name"
+    openssl req -x509 -nodes -out "${SSL_CERT}" -keyout \
+    "${SSL_CERT_KEY}" -subj "/C=MY/ST=Selangor/L=PetalingJaya/O=42/OU=42/CN=${DOMAIN_NAME}/UID=${WP_ADMIN_N}"
 
 # copy the nginx configuration file
 COPY conf/nginx.conf /etc/nginx/nginx.conf
