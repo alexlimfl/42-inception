@@ -12,4 +12,6 @@ mariadb -e "FLUSH PRIVILEGES;"
 
 # Restart MariaDB in safe mode (or directly run mysqld)
 mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" shutdown
+
+# Initialize server to listen incoming connections from 3306
 mysqld --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql'

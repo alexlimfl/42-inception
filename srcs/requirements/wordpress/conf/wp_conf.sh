@@ -32,7 +32,7 @@ if [ $(date +%s) -ge $end_time ]; then
     exit 1
 fi
 
-# Install WordPress
+# Setup WordPress
 wp core download --allow-root
 wp core config --dbhost="mariadb:3306" --dbname="$MYSQL_DB" --dbuser="$MYSQL_USER" --dbpass="$MYSQL_PASSWORD" --allow-root
 wp core install --url="$DOMAIN_NAME" --title="$WP_TITLE" --admin_user="$WP_ADMIN_N" --admin_password="$WP_ADMIN_P" --admin_email="$WP_ADMIN_E" --allow-root
