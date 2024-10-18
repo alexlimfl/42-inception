@@ -1,19 +1,19 @@
-
-# the services part
+# The services part
 services:
-#mariadb
+  # mariadb
   mariadb:
     image: mariadb:user
     container_name: mariadb
     build: ./requirements/mariadb
     volumes:
       - mariadb:/var/lib/mysql
-    env_file :
+    env_file:
       - .env
-    networks :
+    networks:
       - inception
     restart: always
-#nginx
+
+  # nginx
   nginx:
     image: nginx:user
     container_name: nginx
@@ -27,7 +27,8 @@ services:
     networks:
       - inception
     restart: always
-#wordpress
+
+  # wordpress
   wordpress:
     image: wordpress:user
     container_name: wordpress
@@ -36,30 +37,30 @@ services:
       - mariadb
     volumes:
       - wordpress:/var/www/wordpress
-    env_file :
+    env_file:
       - .env
     networks:
       - inception
     restart: always
 
-# the volumes part
+# The volumes part
 volumes:
   mariadb:
     name: mariadb
     driver: local
     driver_opts:
-      device: /home/folim/data/mariadb
-      o : bind
-      type : none
+      device: ${DB_DATA}
+      o: bind
+      type: none
   wordpress:
     name: wordpress
     driver: local
     driver_opts:
-      device: /home/folim/data/wordpress
-      o : bind
-      type : none
+      device: ${WP_DATA}
+      o: bind
+      type: none
 
-# the networks part
+# The networks part
 networks:
   inception:
     name: inception
